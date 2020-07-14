@@ -3,11 +3,11 @@
     <div class="title">{{ title }}</div>
     <div class="value">{{ value }}</div>
     <div class="chart">
-        <slot></slot>
+      <slot></slot>
     </div>
     <div class="line" />
     <div class="total">
-        <slot name="footer"></slot>
+      <slot name="footer"></slot>
     </div>
   </div>
 </template>
@@ -43,5 +43,31 @@ export default {
 .total {
   font-size: 12px;
   color: #666;
+}
+</style>
+
+<style lang="scss">
+.emphasis {
+  margin-left: 10px;
+  color: #333;
+  font-weight: 700;
+}
+
+.increase {
+  width: 0;
+  height: 0;
+  margin: 0 0 3px 5px;
+  border-style: solid;
+  border-width: 3px;
+  border-color: transparent transparent red transparent;
+}
+
+.decrease {
+  width: 0;
+  height: 0;
+  margin: 3px 0 0 5px;
+  border-style: solid;
+  border-width: 3px;
+  border-color: green transparent transparent transparent;
 }
 </style>

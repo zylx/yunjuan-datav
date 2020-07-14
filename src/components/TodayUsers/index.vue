@@ -4,10 +4,8 @@
       <div class="compare"></div>
     </template>
     <template v-slot:footer>
-      <div>
-        <span>退货率</span>
-        <span class="money">5.82%</span>
-      </div>
+      <span>退货率</span>
+      <span class="emphasis">5.82%</span>
     </template>
   </common-card>
 </template>
@@ -24,13 +22,5 @@ export default {
 .compare {
   height: 100%;
   background-color: yellow;
-}
-span {
-  font-size: 12px;
-}
-.money {
-  margin-left: 5px;
-  color: #333;
-  font-weight: 700;
 }
 </style>
