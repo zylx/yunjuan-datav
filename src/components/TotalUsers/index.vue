@@ -1,13 +1,17 @@
 <template>
   <common-card title="累计用户数" value="1,201,871">
     <template>
-      <div class="compare"></div>
+      <v-chart :options="getOptions()" />
     </template>
     <template v-slot:footer>
-      <span>日同比</span>
-      <span class="emphasis">5.82%</span>
-      <span>月同比</span>
-      <span class="emphasis">32.45%</span>
+      <div class="total-users-footer">
+        <span>日同比</span>
+        <span class="emphasis">8.73%</span>
+        <div class="increase"></div>
+        <span class="month">月同比</span>
+        <span class="emphasis">35.91%</span>
+        <div class="decrease"></div>
+      </div>
     </template>
   </common-card>
 </template>
@@ -16,13 +20,100 @@
 import commonCardMixins from '@/mixins/commonCardMixins';
 export default {
   name: 'TodayUsers',
-  mixins: [commonCardMixins]
+  mixins: [commonCardMixins],
+  methods: {
+    getOptions () {
+      return {
+        xAxis: {
+          show: false
+        },
+        yAxis: {
+          type: 'category',
+          show: false
+        },
+        series: [
+          {
+            type: 'bar',
+            stack: 'total',
+            data: [160],
+            barWidth: '15%',
+            itemStyle: {
+              color: '#45c946'
+            }
+          },
+          {
+            type: 'bar',
+            stack: 'total',
+            data: [250],
+            itemStyle: {
+              color: '#eee'
+            }
+          },
+          {
+            type: 'custom',
+            stack: 'total',
+            data: [160],
+            renderItem: (params, api) => {
+              const value = api.value(0); // 取出当前 dataItem 中第一个维度的数值
+              const endPoint = api.coord([value, 0])
+              return {
+                type: 'group',
+                position: endPoint,
+                children: [
+                  {
+                    type: 'path',
+                    shape: {
+                      d: 'M1024 255.996 511.971 767.909 0 258.996 1024 255.996z',
+                      x: -5,
+                      y: -20,
+                      width: 10,
+                      height: 10,
+                      layout: 'cover'
+                      // 'center'：保持原来的 PathData 的长宽比，居于矩形中，尽可能撑大但不会超出矩形。
+                      // 'cover'：PathData 拉伸为矩形的长宽比，完全填满矩形，不会超出矩形。
+                    },
+                    style: {
+                      fill: '#45c946'
+                    }
+                  },
+                  {
+                    type: 'path',
+                    shape: {
+                      d: 'M0 767.909l512.029-511.913L1024 767.909 0 767.909z',
+                      x: -5,
+                      y: 10,
+                      width: 10,
+                      height: 10,
+                      layout: 'cover'
+                    },
+                    style: {
+                      fill: '#45c946'
+                    }
+                  }
+                ]
+
+              }
+            }
+          }
+        ],
+        grid: {
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0
+        }
+      }
+    }
+  }
 };
 </script>
 
 <style lang="scss" scoped>
-.compare {
-  height: 100%;
-  background-color: yellow;
+.total-users-footer {
+  display: flex;
+  align-items: center;
+  .month {
+    margin-left: 20px;
+  }
 }
 </style>
