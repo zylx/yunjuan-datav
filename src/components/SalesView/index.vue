@@ -3,12 +3,7 @@
     <el-card shadow="hover">
       <template slot="header">
         <div class="menu-wrapper">
-          <el-menu
-            class="menu-left"
-            mode="horizontal"
-            :default-active="activeIndex"
-            @select="onMenuSelect"
-          >
+          <el-menu class="menu-left" mode="horizontal" :default-active="activeIndex" @select="onMenuSelect">
             <el-menu-item index="1">销售额</el-menu-item>
             <el-menu-item index="2">访问量</el-menu-item>
           </el-menu>
@@ -19,16 +14,7 @@
               <el-radio-button label="thisMonth">本月</el-radio-button>
               <el-radio-button label="thisYear">今年</el-radio-button>
             </el-radio-group>
-            <el-date-picker
-              v-model="date"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              size="small"
-              unlink-panels
-              :picker-options="pickerOptions"
-            />
+            <el-date-picker v-model="date" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" size="small" unlink-panels :picker-options="pickerOptions" />
           </div>
         </div>
       </template>
@@ -71,7 +57,6 @@ export default {
           this.getDateRange('最近一年', 3600 * 1000 * 24 * 366)
         ]
       },
-      chartOption: {},
       rankData: [
         {
           no: 1,
@@ -108,8 +93,12 @@ export default {
           name: '肯德基',
           sales: '23,321'
         }
-      ]
+      ],
+      chartOption: {}
     }
+  },
+  mounted () {
+    this.chartOption = this.getOptions();
   },
   methods: {
     onMenuSelect (index) {
@@ -123,6 +112,67 @@ export default {
           const start = new Date();
           start.setTime(end.getTime() - (date || 0));
           picker.$emit('pick', [start, end], true) // 设置为 true，选中 快捷项 后日期面板不隐藏
+        }
+      }
+    },
+    getOptions () {
+      return {
+        title: {
+          text: '年度销售额',
+          textStyle: {
+            fontSize: 12,
+            color: '#666'
+          },
+          top: 10,
+          left: 15
+        },
+        xAxis: {
+          type: 'category',
+          data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+          axisLine: {
+            lineStyle: {
+              color: '#999'
+            }
+          },
+          axisTick: {
+            alignWithLabel: true,
+            lineStyle: {
+              color: '#999'
+            }
+          },
+          axisLabel: {
+            color: '#333'
+          }
+        },
+        yAxis: {
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          splitLine: {
+            lineStyle: {
+              type: 'dotted',
+              color: '#ececec'
+            }
+          }
+        },
+        series: [
+          {
+            type: 'bar',
+            barWidth: '35%',
+            data: [200, 250, 300, 350, 250, 200, 250, 300, 350, 200, 250, 280],
+            itemStyle: {
+              color: '#3398DB'
+            }
+          }
+        ],
+        grid: {
+          top: 60,
+          left: 50,
+          right: 50,
+          bottom: 40
         }
       }
     }
@@ -180,8 +230,8 @@ export default {
         padding-left: 0;
         .list-item {
           display: flex;
-          height: 20px;
-          line-height: 20px;
+          height: 22px;
+          line-height: 22px;
           padding: 6px 10px 6px 0;
           list-style: none;
           font-size: 14px;
@@ -200,8 +250,9 @@ export default {
             margin-left: 15px;
           }
           .item-sales {
+            display: flex;
             flex: 1;
-            text-align: right;
+            justify-content: flex-end;
           }
         }
       }
