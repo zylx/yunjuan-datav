@@ -120,7 +120,7 @@ export default {
         title: {
           text: '年度销售额',
           textStyle: {
-            fontSize: 12,
+            fontSize: 14,
             color: '#666'
           },
           top: 10,
@@ -222,9 +222,9 @@ export default {
       height: 100%;
       overflow: hidden;
       .list-title {
-        font-size: 12px;
+        font-size: 14px;
         color: #666;
-        font-weight: 500;
+        font-weight: 600;
       }
       .list-wrapper {
         padding-left: 0;
