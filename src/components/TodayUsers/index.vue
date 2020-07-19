@@ -28,7 +28,7 @@ export default {
         },
         tooltip: {
           formatter (params) {
-            return `${params.name}<br>直接访问：${params.value}`;
+            return `${params.name}<br>${params.marker}直接访问量：${params.value}`;
           }
         },
         series: [
