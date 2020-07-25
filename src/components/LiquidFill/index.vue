@@ -3,17 +3,21 @@
 </template>
 
 <script>
+import commonDataMixins from '@/mixins/commonDataMixins';
 export default {
   name: 'LiquidFill',
+  mixins: [commonDataMixins],
   data () {
     return {
       chartData: {},
       chartSettings: {}
     }
   },
-  mounted () {
-    this.chartData = this.getChartData();
-    this.chartSettings = this.getChartSettings();
+  watch: {
+    userGrowthLastMonth () {
+      this.chartData = this.getChartData();
+      this.chartSettings = this.getChartSettings();
+    }
   },
   methods: {
     getChartData () {
@@ -21,7 +25,7 @@ export default {
         columns: ['title', 'percent'],
         rows: [{
           title: 'rate',
-          percent: 0.26
+          percent: parseFloat(this.userGrowthLastMonth) / 100
         }]
       }
     },
@@ -32,8 +36,8 @@ export default {
             radius: '80%',
             label: {
               normal: {
-                formatter: (v) => {
-                  return `${Math.floor(v.data.value * 100)}%`;
+                formatter: (param) => {
+                  return `${(param.value * 100).toFixed(2)}%`;
                 },
                 textStyle: {
                   fontSize: 36,
@@ -43,6 +47,12 @@ export default {
                 position: ['50%', '50%'],
                 insideColor: '#fff'
               }
+            },
+            tooltip: {
+              formatter: (param) => {
+                return `${param.marker}月同比增长：${(param.value * 100).toFixed(2)}%`;
+              },
+              position: 'inside'
             },
             outline: {
               itemStyle: {

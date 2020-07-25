@@ -51,11 +51,11 @@ export default {
     width: 80%;
     height: 600px;
     background-color: #fff;
-    // .ve-bmap {
-    //   .anchorBL {
-    //     display: none;
-    //   }
-    // }
+    .ve-bmap /deep/ { // 隐藏百度地图左下角的 logo 及文字
+      .anchorBL {
+        display: none;
+      }
+    }
   }
   .right {
     flex: 1;
@@ -72,7 +72,7 @@ export default {
       font-size: 14px;
       font-weight: 500;
     }
-    .chart-wrapper{
+    .chart-wrapper {
       width: 100%;
       height: 200px;
     }

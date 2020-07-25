@@ -19,6 +19,43 @@ export default {
     SalesView,
     MapView,
     BottomView
+  },
+  data () {
+    return {
+      mapData: {},
+      reportData: {},
+      wordCloud: {}
+    }
+  },
+  provide () {
+    return {
+      getMapData: () => this.mapData,
+      getReportData: () => this.reportData,
+      getWordCloud: () => this.wordCloud
+    }
+  },
+  mounted () {
+    this.$services.mapData()
+      .then((res) => {
+        this.mapData = res;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    this.$services.reportData()
+      .then((res) => {
+        this.reportData = res;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    this.$services.wordCloud()
+      .then((res) => {
+        this.wordCloud = res;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 };
 </script>

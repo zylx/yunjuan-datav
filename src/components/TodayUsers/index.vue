@@ -1,40 +1,41 @@
 <template>
-  <common-card title="今日交易用户数" value="56,790">
+  <common-card title="今日交易用户数" :value="orderUser">
     <template>
       <v-chart :options="getOptions()" />
     </template>
     <template v-slot:footer>
       <span>退货率</span>
-      <span class="emphasis">5.82%</span>
+      <span class="emphasis">{{returnRate}}</span>
     </template>
   </common-card>
 </template>
 
 <script>
 import commonCardMixins from '@/mixins/commonCardMixins';
+import commonDataMixins from '@/mixins/commonDataMixins';
 export default {
   name: 'TodayUsers',
-  mixins: [commonCardMixins],
+  mixins: [commonCardMixins, commonDataMixins],
   methods: {
     getOptions () {
       return {
         xAxis: {
           type: 'category',
           show: false,
-          data: ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00']
+          data: this.orderUserTrendAxis
         },
         yAxis: {
           show: false
         },
         tooltip: {
           formatter (params) {
-            return `${params.name}<br>${params.marker}直接访问量：${params.value}`;
+            return `${params.name}<br>${params.marker}用户交易量：${params.value}`;
           }
         },
         series: [
           {
             type: 'bar',
-            data: [234, 435, 290, 403, 340, 240, 432, 179, 502, 450, 502, 320, 128, 308, 340, 202],
+            data: this.orderUserTrend,
             barWidth: '60%',
             itemStyle: {
               color: '#3398DB'

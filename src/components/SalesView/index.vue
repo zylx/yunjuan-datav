@@ -27,7 +27,7 @@
               <li class="list-item" v-for="item in rankData" :key="item.no">
                 <span :class="['item-no', item.no <= 3 ? 'top-no' : '']">{{ item.no }}</span>
                 <span class="item-name">{{ item.name }}</span>
-                <span class="item-sales">{{ item.sales }}</span>
+                <span class="item-sales">{{ item.money }}</span>
               </li>
             </ul>
           </div>
@@ -38,8 +38,10 @@
 </template>
 
 <script>
+import commonDataMixins from '@/mixins/commonDataMixins';
 export default {
   name: 'SalesView',
+  mixins: [commonDataMixins],
   data () {
     return {
       activeIndex: '1',
@@ -57,52 +59,27 @@ export default {
           this.getDateRange('最近一年', 3600 * 1000 * 24 * 366)
         ]
       },
-      rankData: [
-        {
-          no: 1,
-          name: '肯德基',
-          sales: '23,321'
-        },
-        {
-          no: 2,
-          name: '麦当劳',
-          sales: '23,321'
-        },
-        {
-          no: 3,
-          name: '海底捞',
-          sales: '23,321'
-        },
-        {
-          no: 4,
-          name: '肯德基',
-          sales: '23,321'
-        },
-        {
-          no: 5,
-          name: '肯德基',
-          sales: '23,321'
-        },
-        {
-          no: 6,
-          name: '肯德基',
-          sales: '23,321'
-        },
-        {
-          no: 7,
-          name: '肯德基',
-          sales: '23,321'
-        }
-      ],
       chartOption: {}
     }
   },
-  mounted () {
-    this.chartOption = this.getOptions();
+  computed: {
+    rankData () {
+      return this.activeIndex === '1' ? this.orderRank : this.userRank;
+    }
+  },
+  watch: {
+    orderFullYear () {
+      this.getOptions(this.orderFullYear, this.orderFullYearAxis, '年度销售额');
+    }
   },
   methods: {
     onMenuSelect (index) {
-      console.log('onMemuSelect -> index', index)
+      this.activeIndex = index;
+      if (index === '1') {
+        this.getOptions(this.orderFullYear, this.orderFullYearAxis, '年度销售额');
+      } else {
+        this.getOptions(this.userFullYear, this.userFullYearAxis, '年度用户访问量');
+      }
     },
     getDateRange (title, date) {
       return {
@@ -115,10 +92,10 @@ export default {
         }
       }
     },
-    getOptions () {
-      return {
+    getOptions (data, dataAxis, title) {
+      this.chartOption = {
         title: {
-          text: '年度销售额',
+          text: title,
           textStyle: {
             fontSize: 14,
             color: '#666'
@@ -128,7 +105,7 @@ export default {
         },
         xAxis: {
           type: 'category',
-          data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+          data: dataAxis,
           axisLine: {
             lineStyle: {
               color: '#999'
@@ -162,7 +139,7 @@ export default {
           {
             type: 'bar',
             barWidth: '35%',
-            data: [200, 250, 300, 350, 250, 200, 250, 300, 350, 200, 250, 280],
+            data,
             itemStyle: {
               color: '#3398DB'
             }

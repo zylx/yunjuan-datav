@@ -10,23 +10,24 @@
             <div class="chart-inner">
               <div class="chart">
                 <div class="chart-title">搜索用户数</div>
-                <div class="chart-data">93,634</div>
+                <div class="chart-data">{{searchUsers | format}}</div>
                 <v-chart :options="searchUsersOption" />
               </div>
               <div class="chart">
                 <div class="chart-title">搜索量</div>
-                <div class="chart-data">198,782</div>
-                <v-chart :options="searchNumberOption" />
+                <div class="chart-data">{{searchCount | format}}</div>
+                <v-chart :options="searchCountOption" />
               </div>
             </div>
             <div class="table-wrapper">
-              <el-table :data="tableData">
-                <el-table-column prop="rank" label="排名" width="180" />
-                <el-table-column prop="keyword" label="关键词" width="200" />
+              <el-table :data="pagesData">
+                <el-table-column prop="rank" label="排名" />
+                <el-table-column prop="keyword" label="关键词" />
                 <el-table-column prop="count" label="搜索量" />
                 <el-table-column prop="users" label="搜索用户数" />
+                <el-table-column prop="range" label="占比" />
               </el-table>
-              <el-pagination layout="prev, pager, next" :total="100" :page-size="4" background @current-change="onPageChange" />
+              <el-pagination layout="prev, pager, next" :total="total" :page-size="pageSize" background @current-change="onPageChange" />
             </div>
           </div>
         </template>
@@ -38,7 +39,7 @@
           <div class="title-wrapper">
             <div class="title">分类销售排行</div>
             <div class="radio-wrapper">
-              <el-radio-group v-model="radioSelect" size="small">
+              <el-radio-group v-model="categoryType" size="small" @change="onCategoryChange">
                 <el-radio-button label="category">品类</el-radio-button>
                 <el-radio-button label="commodity">商品</el-radio-button>
               </el-radio-group>
@@ -56,41 +57,80 @@
 </template>
 
 <script>
+import commonDataMixins from '@/mixins/commonDataMixins'
 export default {
   name: 'BottomView',
+  mixins: [commonDataMixins],
   data () {
     return {
-      radioSelect: 'category',
+      categoryType: 'category',
+      searchUsers: 0,
+      searchCount: 0,
       searchUsersOption: {},
-      searchNumberOption: {},
-      tableData: [
-        { id: 1, rank: 1, keyword: '北京', count: 100, users: 90, range: '90%' },
-        { id: 2, rank: 2, keyword: '上海', count: 100, users: 90, range: '90%' },
-        { id: 3, rank: 3, keyword: '广州', count: 100, users: 90, range: '90%' },
-        { id: 4, rank: 4, keyword: '深圳', count: 100, users: 90, range: '90%' }
-      ],
-      categoryOption: {}
+      searchCountOption: {},
+      pageSize: 4,
+      total: 0,
+      pagesData: [],
+      tableData: [],
+      categoryOption: {},
+      categoryColor: ['#8d7fec', '#5085f2', '#f8726b', '#e7e702', '#78f283', '#4bc1fc']
     }
   },
-  mounted () {
-    this.searchUsersOption = this.getSearchOption();
-    this.searchNumberOption = this.getSearchOption();
-    this.categoryOption = this.getCategoryOption();
+  watch: {
+    wordCLoud () {
+      if (this.wordCLoud.length > 0) {
+        this.total = this.wordCLoud.length;
+        const totalData = [];
+        this.wordCLoud.forEach((item, index) => {
+          totalData.push({
+            id: index + 1,
+            rank: index + 1,
+            keyword: item.word,
+            count: item.count,
+            users: item.user,
+            range: `${(item.user / item.count * 100).toFixed(2)}%`
+          });
+          this.searchUsers += item.user;
+          this.searchCount += item.count;
+        });
+        this.tableData = totalData.sort((a, b) => {
+          return b.count - a.count
+        });
+        this.paginationRender(1);
+        this.searchUsersOption = this.getChartOption('user');
+        this.searchCountOption = this.getChartOption('count');
+      }
+    },
+    categoryData () {
+      this.getCategoryOption();
+    }
   },
   methods: {
-    getSearchOption () {
+    paginationRender (page) {
+      const start = (page - 1) * this.pageSize;
+      this.pagesData = this.tableData.slice(start, start + this.pageSize);
+    },
+    getChartOption (key = 'user') {
+      const data = [];
+      const dataAxis = [];
+      this.wordCLoud.forEach((item) => {
+        data.push(item[key]);
+        dataAxis.push(item.word);
+      });
       return {
         xAxis: {
           type: 'category',
-          boundaryGap: false
+          boundaryGap: false,
+          data: dataAxis
         },
         yAxis: {
           show: false
         },
+        tooltip: {},
         series: [
           {
             type: 'line',
-            data: [100, 200, 150, 210, 160, 120, 50, 200, 130],
+            data,
             areaStyle: {
               color: 'rgba(95, 187, 255, .5)'
             },
@@ -112,16 +152,34 @@ export default {
       }
     },
     getCategoryOption () {
-      const mockData = [
-        { legendname: '面粉粥店', value: 67, percent: '15.40', itemStyle: { color: '#e7e702' }, name: '面粉粥店 | 15.40%' },
-        { legendname: '简餐便当', value: 79, percent: '22.12', itemStyle: { color: '#8d7fec' }, name: '简餐便当 | 22.12%' },
-        { legendname: '汉堡比萨', value: 108, percent: '30.78', itemStyle: { color: '#5085f2' }, name: '汉堡比萨 | 30.78%' },
-        { legendname: '可乐雪碧', value: 116, percent: '31.70', itemStyle: { color: '#67c23a' }, name: '可乐雪碧 | 31.70%' }
-      ];
-      return {
+      let data;
+      let dataAxis;
+      let total = 0;
+      if (this.categoryType === 'category') {
+        data = this.categoryData.data1;
+        dataAxis = this.categoryData.axisX;
+      } else {
+        data = this.commodityData.data1;
+        dataAxis = this.commodityData.axisX;
+      }
+      data = data.slice(0, 6);
+      dataAxis = dataAxis.slice(0, 6);
+      total = data.reduce((prev, curr) => prev + curr, 0);
+      const chartData = [];
+      data.forEach((item, index) => {
+        const percent = `${(item / total * 100).toFixed(2)}%`;
+        chartData.push({
+          legendname: dataAxis[index],
+          value: item,
+          percent,
+          itemStyle: { color: this.categoryColor[index] },
+          name: `${dataAxis[index]} | ${percent}`
+        });
+      })
+      this.categoryOption = {
         title: [
           {
-            text: '品类分布',
+            text: `${this.categoryType === 'category' ? '品类' : '商品'}分布`,
             textStyle: {
               fontSize: 14,
               color: '#666'
@@ -131,7 +189,7 @@ export default {
           },
           {
             text: '累计订单量',
-            subtext: '320',
+            subtext: total,
             x: '34.5%',
             y: '42.5%',
             textStyle: {
@@ -168,7 +226,7 @@ export default {
           {
             name: '品类分布',
             type: 'pie',
-            data: mockData,
+            data: chartData,
             clockwise: false,
             label: {
               normal: {
@@ -197,7 +255,11 @@ export default {
       }
     },
     onPageChange (page) {
-      console.log('onPageChange -> page', page)
+      this.paginationRender(page);
+    },
+    onCategoryChange (type) {
+      this.categoryType = type;
+      this.getCategoryOption();
     }
   }
 };

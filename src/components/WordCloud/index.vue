@@ -3,48 +3,42 @@
 </template>
 
 <script>
+import commonDataMixins from '@/mixins/commonDataMixins';
 export default {
   name: 'WoedCloud',
+  mixins: [commonDataMixins],
   data () {
     return {
       chartData: {},
-      chartSettings: {}
+      chartSettings: {
+        color: [
+          'rgba(97, 216, 0, 0.7)',
+          'rgba(204, 178, 26, 0.7)',
+          'rgba(245, 166, 35, 0.7)',
+          'rgba(156, 13, 113, 0.7)'
+        ]
+      }
     }
   },
-  mounted () {
-    this.chartData = this.getChartData();
-    this.chartSettings = { color: ['rgba(97, 216, 0, 0.7)', 'rgba(204, 178, 26, 0.7)', 'rgba(245, 166, 35, 0.7)', 'rgba(156, 13, 113, 0.7)'] };
+  watch: {
+    wordCLoud () {
+      this.chartData = this.getChartData();
+    }
   },
   methods: {
     getChartData () {
+      const wordCloudRows = [];
+      if (this.wordCLoud.length > 0) {
+        this.wordCLoud.forEach((item) => {
+          wordCloudRows.push({
+            name: item.word,
+            value: item.count
+          });
+        })
+      }
       return {
         columns: ['name', 'value'],
-        rows: [
-          {
-            name: '云卷花生',
-            value: 100
-          },
-          {
-            name: '云卷芝麻',
-            value: 60
-          },
-          {
-            name: '云卷碎米花',
-            value: 82
-          },
-          {
-            name: '云卷红豆',
-            value: 36
-          },
-          {
-            name: '云卷绿豆',
-            value: 54
-          },
-          {
-            name: '云卷花瓣',
-            value: 118
-          }
-        ]
+        rows: wordCloudRows
       }
     }
   }
