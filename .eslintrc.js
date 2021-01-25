@@ -13,6 +13,6 @@ module.exports = {
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'semi': 'off', // 强制在语句末尾使用分号
+    semi: 'off' // 强制在语句末尾使用分号
   }
 }

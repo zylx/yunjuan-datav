@@ -10,7 +10,7 @@ export function autoMatch (prefix) {
     // baseUrl = `/${prefix || 'api'}`;
     baseUrl = 'https://book.youbaobao.xyz:18082';
   } else {
-    // 生产环境 根据实际配置 根据 prefix 匹配url;
+    // 生产环境 根据实际配置 根据 prefix 匹配 url;
     // 配置来源 根据实际应用场景更改配置。(1.从全局读取；2.线上配置中心读取)
     switch (prefix) {
       case 'baidu':
